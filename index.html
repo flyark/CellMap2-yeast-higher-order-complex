@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CellMap2 Yeast Higher-Order Complex Catalog</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='5' cy='5' r='2.6' fill='%232a78d6'/><circle cx='11' cy='6' r='2.6' fill='%23eb6834'/><circle cx='8' cy='11' r='2.6' fill='%2316a34a'/></svg>">
+<style>
+:root{
+  color-scheme: light;
+  --surface-0:#f6f6f4; --surface-1:#fcfcfb; --surface-2:#efefec;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#77766f;
+  --border:#dcdcd6; --border-strong:#c2c2ba; --accent:#2a78d6;
+  --tier-a:#6B21A8; --tier-b:#0a6b55; --tier-c:#8a6200; --tier-none:#6b7280;
+}
+@media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])){
+  color-scheme: dark;
+  --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --tier-a:#c58af9; --tier-b:#2fbf9b; --tier-c:#e0a72c; --tier-none:#9b9a92;
+}}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --tier-a:#c58af9; --tier-b:#2fbf9b; --tier-c:#e0a72c; --tier-none:#9b9a92;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);
+  font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 22px 48px}
+h1{font-size:20px;margin:0 0 3px;letter-spacing:-.01em}
+.sub{color:var(--text-secondary);font-size:13px;margin:0 0 14px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.nav a{padding:6px 13px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-1);
+  color:var(--text-secondary);text-decoration:none;font-size:12.5px;font-weight:500}
+.nav a:hover{border-color:var(--accent);color:var(--accent)}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+label.f{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-secondary)}
+select,input[type=search]{padding:6px 9px;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--surface-1);color:var(--text-primary);font-size:13px;font-family:inherit}
+input[type=search]{width:230px}
+.count{color:var(--text-secondary);font-size:13px;font-variant-numeric:tabular-nums}
+.right{margin-left:auto;display:flex;align-items:center;gap:11px}
+.dl{padding:6px 11px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-1);
+  color:var(--text-secondary);text-decoration:none;font-size:12.5px;font-weight:500;white-space:nowrap}
+.dl:hover{border-color:var(--accent);color:var(--accent)}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:11px;overflow:hidden}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface-2);cursor:pointer;font-weight:600;
+  color:var(--text-secondary);z-index:1;user-select:none;font-size:12.5px}
+th .ar{opacity:.35;font-size:10px;margin-left:3px}
+th[aria-sort] .ar{opacity:1;color:var(--accent)}
+td.num{font-variant-numeric:tabular-nums;text-align:right}
+td.ilis{font-weight:700}
+.b1{color:var(--tier-a)} .b5{color:var(--tier-b)} .b10{color:var(--tier-c)} .b0{color:var(--tier-none)}
+td.members{white-space:normal;color:var(--text-secondary)}
+/* every column fits its content; Members takes the remaining width */
+th:not([data-k="members"]),td:not(.members):not(.empty){width:1%}
+th.num{text-align:right}
+.badge{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11.5px;font-weight:600;
+  background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text-secondary);white-space:nowrap}
+.bands{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;padding:9px 13px;margin-bottom:10px;
+  background:var(--surface-1);border:1px solid var(--border);border-radius:9px;font-size:12px;color:var(--text-secondary)}
+.bands .key{font-weight:600;margin-right:0;display:inline-flex;align-items:center;gap:5px}
+.sw{width:9px;height:9px;border-radius:2px}
+.bnote{color:var(--text-muted);font-weight:400;margin-left:2px}
+tbody tr:hover{background:var(--surface-2)}
+.dash{color:var(--text-muted)}
+td.pdb{white-space:nowrap;font-variant-numeric:tabular-nums}
+td.pdb .pdbl{font-weight:600;text-decoration:none} td.pdb .pdbl:hover{text-decoration:underline}
+td.pdb .pdbl.weak{font-weight:400;color:var(--text-secondary)}
+td.miss{color:var(--text-secondary)} td.sp{white-space:nowrap;color:var(--text-secondary)}
+a{color:var(--accent)}
+.foot{margin-top:20px;color:var(--text-muted);font-size:12px;line-height:1.7}
+.howto{background:var(--surface-1);border:1px solid var(--border);border-radius:9px;
+  margin-bottom:10px;font-size:12px;color:var(--text-secondary)}
+.howto>summary{padding:9px 13px;cursor:pointer;font-weight:600;list-style:none}
+.howto>summary::-webkit-details-marker{display:none}
+.howto>summary::before{content:"\25B8\00a0"}
+.howto[open]>summary::before{content:"\25BE\00a0"}
+.howto>summary:hover{color:var(--accent)}
+.howto .body{padding:0 13px 11px;line-height:1.75}
+.empty{padding:34px;text-align:center;color:var(--text-muted)}
+@media (max-width:760px){
+  .wrap{padding:16px 12px 40px}
+  th,td{padding:7px 8px}
+  .hide-s{display:none}
+  label.f{min-width:0} select{min-width:0;max-width:100%}
+  input[type=search]{width:100%}
+  th.stk,td.stk{position:sticky;right:0;background:var(--surface-1);border-left:1px solid var(--border)}
+  td.stk{z-index:1}
+  th.stk{background:var(--surface-2);z-index:2}
+  tbody tr:hover td.stk{background:var(--surface-2)}
+  td.stk a{display:block;padding:4px 2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CellMap2 Yeast Higher-Order Complex Catalog</h1>
+  <p class="sub">AlphaFold3 multimer predictions (3&#8211;8 chains) for candidate higher-order assemblies extended from the confidence-filtered <em>S. cerevisiae</em> CellMap 2.0 pairwise interactome (52,937 predicted pairs among 5,354 genes). Candidate complexes were grown from the network's own high-confidence interactions and merged where they overlapped, <strong>not</strong> picked by model score; the <strong>125</strong> listed here are those whose AlphaFold3 fold formed one fully connected structure with no atomic clash. <strong>Connections</strong>: chain pairs that form an interface in the AlphaFold3 fold (iLIS &ge; 0.10 in at least one of the 5 models, the same rule used to call a fold fully connected). <strong>PDB</strong>: the experimental structure holding the most of the complex's subunits, how many it holds, its size and what it lacks (see How to read this table). The cutoff filter uses each complex's iLIS: for each chain pair the best of the 5 models, averaged over chain pairs.</p>
+
+
+  <div class="bar">
+    <label class="f">iLIS cutoff
+      <select id="cut">
+        <option value="0.551">1&thinsp;% FPR &mdash; iLIS &ge; 0.551</option>
+        <option value="0.339">5&thinsp;% FPR &mdash; iLIS &ge; 0.339</option>
+        <option value="0.223" selected>10&thinsp;% FPR &mdash; iLIS &ge; 0.223</option>
+        <option value="0">All predictions</option>
+      </select>
+    </label>
+    <input type="search" id="q" placeholder="Filter by gene" autocomplete="off" aria-label="Filter by gene">
+    <span class="right">
+      <span class="count" id="count"></span>
+      <a class="dl" href="data/cluster_available.json" download title="Full manifest, all complexes">&#8595; JSON</a>
+    </span>
+  </div>
+
+
+  <details class="howto">
+    <summary>How to read this table</summary>
+    <div class="body">
+      <strong>Which complexes are listed</strong> &mdash; candidate complexes were grown from the network's own high-confidence interactions (no model score involved) and folded with AlphaFold3. Only folds that formed one fully connected structure with no atomic clash are listed; partial, failed or clashing folds, and candidates not yet folded, are not shown.<br>
+      <strong>PDB</strong> &mdash; the experimental structure (X-ray, cryo-EM or NMR) holding the most of this complex's subunits, at least 2. Each subunit's UniProt accession gives its PDB entries, and a subunit counts only if RCSB lists that protein among the entry's chains. <em>S. cerevisiae</em> entries come first; only when none holds the complex well is a homolog entry shown, through human, mouse or <em>S. pombe</em> orthologs (DIOPT). A lighter ID means partial: under 60% of the subunits, and only 2 of them or inside a much larger assembly. When several entries qualify, a non-partial one comes first, then the one holding the most subunits, then the fewest other proteins, then the best resolution, then the newest. Hover for the title, method and resolution. &mdash; = no experimental entry holds 2 or more of the subunits. PDB and UniProt searched on <span id="pdbdate" style="white-space:nowrap">&hellip;</span>.<br>
+      <strong>Matched</strong> &mdash; subunits of this complex in that entry / subunits in the complex.<br>
+      <strong>PDB size</strong> &mdash; distinct proteins in the entry (RNA and DNA not counted); PDB size minus matched = other proteins in it.<br>
+      <strong>Not in PDB</strong> &mdash; this complex's subunits the entry lacks.<br>
+      <strong>Species</strong> &mdash; the organism of the entry.<br>
+      <strong>Structure</strong> &mdash; opens in <a href="https://flyark.github.io/LIVIA">LIVIA</a> with all ranked models, per-model scores and PAE maps.<br>
+      <a href="data/cluster_available.json" download>Download the full manifest (JSON)</a> &middot;
+      <a href="https://github.com/flyark/CellMap2-yeast-higher-order-complex">Catalog source</a> &middot;
+      <a href="https://github.com/flyark/CellMap2-yeast-cluster-structures">Structure bundles</a>
+    </div>
+  </details>
+
+  <div class="card">
+    <div class="scroll">
+    <table id="tbl">
+      <thead><tr>
+        <th data-k="n" class="num">N-mer <span class="ar">&#8645;</span></th>
+        <th data-k="members">Members <span class="ar">&#8645;</span></th>
+        <th data-k="conn_total" class="num" title="chain pairs forming an interface in the AF3 fold (iLIS &ge; 0.10 in at least one of the 5 models)">Connections <span class="ar">&#8645;</span></th>
+        <th data-k="pdb_id" title="the experimental structure holding the most of this complex's subunits, at least 2">PDB <span class="ar">&#8645;</span></th>
+        <th data-k="pdb_cov" class="num" title="subunits of this complex found in that PDB entry / subunits in the complex">Matched <span class="ar">&#8645;</span></th>
+        <th data-k="pdb_size" class="num" title="distinct proteins in that PDB entry (RNA and DNA not counted)">PDB size <span class="ar">&#8645;</span></th>
+        <th data-k="pdb_miss" title="subunits of this complex that are not in that PDB entry">Not in PDB <span class="ar">&#8645;</span></th>
+        <th data-k="pdb_sp" title="organism of that PDB entry: S. cerevisiae, or the species of the orthologs for a homolog entry">Species <span class="ar">&#8645;</span></th>
+        <th class="stk">Structure</th>
+      </tr></thead>
+      <tbody><tr><td colspan="9" class="empty">Loading&hellip;</td></tr></tbody>
+    </table>
+    </div>
+  </div>
+
+  <p class="foot">
+    <a href="data/cluster_available.json" download>Download the full manifest (JSON)</a> &middot;
+    Structure bundles hosted separately at
+    <a href="https://github.com/flyark/CellMap2-yeast-cluster-structures">CellMap2-yeast-cluster-structures</a>
+  </p>
+</div>
+
+<script>
+const LIVIA='https://flyark.github.io/LIVIA/universal.html';
+let ROWS=[], cut=0.223, q='', sortK='n', sortAsc=false;
+
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const EPS=1e-9, ge=(v,c)=>v>=c-EPS;
+const band = v => ge(v,0.551)?'b1' : ge(v,0.339)?'b5' : ge(v,0.223)?'b10' : 'b0';
+const passCut = r => ge(r.iLIS_best, cut);
+const matchQ = (r,n) => !n || r.job.toUpperCase().includes(n) || r.membersJoined.toUpperCase().includes(n);
+const NUM = new Set(['n','iLIS_best','conn_total','pdb_cov','pdb_size']);
+
+function view(){
+  const n=q.trim().toUpperCase();
+  return ROWS.filter(r=>passCut(r)&&matchQ(r,n)).sort((a,b)=>{
+    const v = NUM.has(sortK) ? a[sortK]-b[sortK] : String(a[sortK]).localeCompare(String(b[sortK]));
+    return (sortAsc? v : -v) || a.membersJoined.localeCompare(b.membersJoined);
+  });
+}
+const DASH = '<span class="dash">&mdash;</span>';
+const SPECIES = {'S. cerevisiae': 'S. cerevisiae', human: 'H. sapiens', mouse: 'M. musculus', 'S. pombe': 'S. pombe'};
+function pdbCell(r){
+  const e = r.exp;
+  if (!e || !e.sup) return DASH;
+  const tip = [`${e.best_pdb}: ${e.best_title || ''}`,
+    [e.best_method, e.best_res ? `${e.best_res} Å` : '', e.best_year].filter(Boolean).join(', '),
+    `${e.n_pdb} entr${e.n_pdb > 1 ? 'ies' : 'y'} from ${e.n_studies} stud${e.n_studies > 1 ? 'ies' : 'y'} hold 2 or more of the subunits`,
+    e.tier === 'homolog' ? 'homolog structure; ' + (e.yeast ? `the best S. cerevisiae entry, ${e.yeast.best_pdb}, holds ${e.yeast.cover} of ${e.n}` : 'no S. cerevisiae entry holds 2 or more of the subunits') : '',
+    e.best_strong ? '' : 'partial: under 60% of the subunits, and only 2 of them or inside a much larger assembly'].filter(Boolean).join('\n');
+  return `<a class="pdbl${e.best_strong ? '' : ' weak'}" href="https://www.rcsb.org/structure/${esc(e.best_pdb)}" target="_blank" rel="noopener" title="${esc(tip)}">${esc(e.best_pdb)}</a>`;
+}
+function render(){
+  const rows=view();
+  document.getElementById('count').textContent = `${rows.length.toLocaleString()} of ${ROWS.length.toLocaleString()} complexes`;
+  document.querySelector('#tbl tbody').innerHTML = rows.length ? rows.map(r=>{
+    const link = `${LIVIA}?data=${encodeURIComponent(r.url)}&name=${encodeURIComponent(r.job)}`;
+    const x = r.exp && r.exp.sup ? r.exp : null;
+    return `<tr>
+      <td class="num">${r.n}</td>
+      <td class="members">${esc(r.membersJoined)}</td>
+      <td class="num">${r.conn_total}</td>
+      <td class="pdb">${pdbCell(r)}</td>
+      <td class="num">${x ? `${x.cover}/${x.n}` : DASH}</td>
+      <td class="num">${x && x.best_size != null ? x.best_size : DASH}</td>
+      <td class="miss">${x && x.missing ? (x.missing.length ? esc(x.missing.join(', ')) : '<span class="dash">none</span>') : DASH}</td>
+      <td class="sp">${x ? `<em>${esc(SPECIES[x.species] || x.species)}</em>` : DASH}</td>
+      <td class="stk"><a href="${link}" target="_blank" rel="noopener">LIVIA &#8599;</a></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="9" class="empty">Nothing matches the current filters.</td></tr>`;
+  document.querySelectorAll('#tbl th[data-k]').forEach(th=>{
+    if(th.dataset.k===sortK) th.setAttribute('aria-sort', sortAsc?'ascending':'descending');
+    else th.removeAttribute('aria-sort');
+  });
+}
+document.getElementById('cut').addEventListener('change',e=>{cut=+e.target.value;render();});
+document.getElementById('q').addEventListener('input',e=>{q=e.target.value;render();});
+document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;
+  sortAsc = (k===sortK) ? !sortAsc : !NUM.has(k);
+  sortK=k; render();
+});
+
+// Unlike FlyPredictome (independent network clustering vs. complex-finding), these candidates were
+// grown from this screen's own interaction network, so a cross-cluster-exclusion check doesn't apply
+// the same way. gene_to_cluster.json ships empty ({}),
+// which makes this a no-op (nothing gets excluded) rather than silently filtering anything.
+function isCrossCluster(members, geneCluster){
+  const touched = new Set();
+  members.forEach(g => { if (g in geneCluster) touched.add(geneCluster[g]); });
+  return touched.size >= 2;
+}
+
+Promise.all([
+  fetch('data/cluster_available.json?v=8').then(r=>r.json()),
+  fetch('data/gene_to_cluster.json?v=1').then(r=>r.json()),
+]).then(([data, geneCluster])=>{
+  ROWS = Object.entries(data)
+    .filter(([,r]) => r.url && r.members && r.members.length>=3 && !isCrossCluster(r.members, geneCluster))
+    .map(([job,r])=>({
+      ...r,
+      membersJoined: (r.members||[]).join(', '),
+      pdb_id: r.exp && r.exp.sup ? r.exp.best_pdb : 'zzzz',
+      pdb_cov: r.exp && r.exp.sup ? r.exp.cover / r.exp.n : -1,
+      pdb_size: r.exp && r.exp.sup && r.exp.best_size != null ? r.exp.best_size : -1,
+      pdb_miss: r.exp && r.exp.sup && r.exp.missing ? r.exp.missing.join(', ') : 'zzzz',
+      pdb_sp: r.exp && r.exp.sup ? (SPECIES[r.exp.species] || r.exp.species) : 'zzzz',
+    }));
+  const sd = (ROWS.find(r => r.exp && r.exp.searched) || {}).exp;
+  document.getElementById('pdbdate').textContent = sd ? sd.searched : 'unknown date';
+  render();
+}).catch(e=>{
+  document.querySelector('#tbl tbody').innerHTML =
+    `<tr><td colspan="9" class="empty">Could not load catalog data &mdash; ${esc(e.message)}</td></tr>`;
+});
+</script>
+</body>
+</html>
