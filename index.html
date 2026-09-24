@@ -10,19 +10,19 @@
   color-scheme: light;
   --surface-0:#f6f6f4; --surface-1:#fcfcfb; --surface-2:#efefec;
   --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#77766f;
-  --border:#dcdcd6; --border-strong:#c2c2ba; --accent:#2a78d6;
+  --border:#dcdcd6; --border-strong:#c2c2ba; --accent:#2a78d6; --nv:#2a6fc9;
 }
 @media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])){
   color-scheme: dark;
   --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
   --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
-  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5; --nv:#2b64b3;
 }}
 :root[data-theme="dark"]{
   color-scheme: dark;
   --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
   --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
-  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
+  --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5; --nv:#2b64b3;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--surface-0);color:var(--text-primary);
@@ -43,6 +43,8 @@ input[type=search]{width:230px}
 .dl{padding:6px 11px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-1);
   color:var(--text-secondary);text-decoration:none;font-size:12.5px;font-weight:500;white-space:nowrap}
 .dl:hover{border-color:var(--accent);color:var(--accent)}
+.nvbtn{padding:6px 14px;border-radius:7px;background:var(--nv);color:#fff;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+.nvbtn:hover{filter:brightness(1.1)} .nvbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .card{background:var(--surface-1);border:1px solid var(--border);border-radius:11px;overflow:hidden}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;font-size:13px}
@@ -100,10 +102,11 @@ a{color:var(--accent)}
 
 
   <div class="bar">
-    <input type="search" id="q" placeholder="Filter by gene" autocomplete="off" aria-label="Filter by gene">
+    <input type="search" id="q" list="geneList" placeholder="Filter by gene" autocomplete="off" aria-label="Filter by gene">
+    <datalist id="geneList"></datalist>
+    <a class="nvbtn" href="network.html" title="Every predicted pairwise interaction among the screened genes">Network view &rarr;</a>
     <span class="right">
       <span class="count" id="count"></span>
-      <a class="dl" href="network.html" title="Every predicted pairwise interaction among the screened genes">Network view &rarr;</a>
       <a class="dl" href="data/cluster_available.json" download title="Full manifest, all complexes">&#8595; JSON</a>
     </span>
   </div>
@@ -234,6 +237,8 @@ Promise.all([
       pdb_miss: r.exp && r.exp.sup && r.exp.missing ? r.exp.missing.join(', ') : 'zzzz',
       pdb_sp: r.exp && r.exp.sup ? (SPECIES[r.exp.species] || r.exp.species) : 'zzzz',
     }));
+  const genes = [...new Set(ROWS.flatMap(r => r.members || []))].sort();
+  document.getElementById('geneList').innerHTML = genes.map(g => `<option value="${esc(g)}">`).join('');
   const sd = (ROWS.find(r => r.exp && r.exp.searched) || {}).exp;
   document.getElementById('pdbdate').textContent = sd ? sd.searched : 'unknown date';
   render();
