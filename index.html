@@ -11,21 +11,18 @@
   --surface-0:#f6f6f4; --surface-1:#fcfcfb; --surface-2:#efefec;
   --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#77766f;
   --border:#dcdcd6; --border-strong:#c2c2ba; --accent:#2a78d6;
-  --tier-a:#6B21A8; --tier-b:#0a6b55; --tier-c:#8a6200; --tier-none:#6b7280;
 }
 @media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])){
   color-scheme: dark;
   --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
   --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
   --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
-  --tier-a:#c58af9; --tier-b:#2fbf9b; --tier-c:#e0a72c; --tier-none:#9b9a92;
 }}
 :root[data-theme="dark"]{
   color-scheme: dark;
   --surface-0:#121211; --surface-1:#1a1a19; --surface-2:#242422;
   --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8e8d84;
   --border:#33332f; --border-strong:#4a4a45; --accent:#3987e5;
-  --tier-a:#c58af9; --tier-b:#2fbf9b; --tier-c:#e0a72c; --tier-none:#9b9a92;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--surface-0);color:var(--text-primary);
@@ -38,7 +35,6 @@ h1{font-size:20px;margin:0 0 3px;letter-spacing:-.01em}
   color:var(--text-secondary);text-decoration:none;font-size:12.5px;font-weight:500}
 .nav a:hover{border-color:var(--accent);color:var(--accent)}
 .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-label.f{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-secondary)}
 select,input[type=search]{padding:6px 9px;border:1px solid var(--border-strong);border-radius:7px;
   background:var(--surface-1);color:var(--text-primary);font-size:13px;font-family:inherit}
 input[type=search]{width:230px}
@@ -56,8 +52,6 @@ th{position:sticky;top:0;background:var(--surface-2);cursor:pointer;font-weight:
 th .ar{opacity:.35;font-size:10px;margin-left:3px}
 th[aria-sort] .ar{opacity:1;color:var(--accent)}
 td.num{font-variant-numeric:tabular-nums;text-align:right}
-td.ilis{font-weight:700}
-.b1{color:var(--tier-a)} .b5{color:var(--tier-b)} .b10{color:var(--tier-c)} .b0{color:var(--tier-none)}
 td.members{white-space:normal;color:var(--text-secondary)}
 /* every column fits its content; Members takes the remaining width */
 th:not([data-k="members"]),td:not(.members):not(.empty){width:1%}
@@ -90,7 +84,6 @@ a{color:var(--accent)}
   .wrap{padding:16px 12px 40px}
   th,td{padding:7px 8px}
   .hide-s{display:none}
-  label.f{min-width:0} select{min-width:0;max-width:100%}
   input[type=search]{width:100%}
   th.stk,td.stk{position:sticky;right:0;background:var(--surface-1);border-left:1px solid var(--border)}
   td.stk{z-index:1}
@@ -103,18 +96,10 @@ a{color:var(--accent)}
 <body>
 <div class="wrap">
   <h1>CellMap2 Yeast Higher-Order Complex Catalog</h1>
-  <p class="sub">AlphaFold3 multimer predictions (3&#8211;8 chains) for candidate higher-order assemblies extended from the confidence-filtered <em>S. cerevisiae</em> CellMap 2.0 pairwise interactome (52,937 predicted pairs among 5,354 genes). Candidate complexes were grown from the network's own high-confidence interactions and merged where they overlapped, <strong>not</strong> picked by model score; the <strong>125</strong> listed here are those whose AlphaFold3 fold formed one fully connected structure with no atomic clash. <strong>Connections</strong>: chain pairs that form an interface in the AlphaFold3 fold (iLIS &ge; 0.10 in at least one of the 5 models, the same rule used to call a fold fully connected). <strong>PDB</strong>: the experimental structure holding the most of the complex's subunits, how many it holds, its size and what it lacks (see How to read this table). The cutoff filter uses each complex's iLIS: for each chain pair the best of the 5 models, averaged over chain pairs.</p>
+  <p class="sub">AlphaFold3 multimer predictions (3&#8211;8 chains) for candidate higher-order assemblies extended from the confidence-filtered <em>S. cerevisiae</em> CellMap 2.0 pairwise interactome (52,937 predicted pairs among 5,354 genes). Candidate complexes were grown from the network's own high-confidence interactions and merged where they overlapped, <strong>not</strong> picked by model score; the <strong>125</strong> listed here are those whose AlphaFold3 fold formed one fully connected structure with no atomic clash. <strong>Connections</strong>: chain pairs that form an interface in the AlphaFold3 fold (iLIS &ge; 0.10 in at least one of the 5 models, the same rule used to call a fold fully connected). <strong>PDB</strong>: the experimental structure holding the most of the complex's subunits, how many it holds, its size and what it lacks (see How to read this table).</p>
 
 
   <div class="bar">
-    <label class="f">iLIS cutoff
-      <select id="cut">
-        <option value="0.551">1&thinsp;% FPR &mdash; iLIS &ge; 0.551</option>
-        <option value="0.339">5&thinsp;% FPR &mdash; iLIS &ge; 0.339</option>
-        <option value="0.223" selected>10&thinsp;% FPR &mdash; iLIS &ge; 0.223</option>
-        <option value="0">All predictions</option>
-      </select>
-    </label>
     <input type="search" id="q" placeholder="Filter by gene" autocomplete="off" aria-label="Filter by gene">
     <span class="right">
       <span class="count" id="count"></span>
@@ -167,18 +152,15 @@ a{color:var(--accent)}
 
 <script>
 const LIVIA='https://flyark.github.io/LIVIA/universal.html';
-let ROWS=[], cut=0.223, q='', sortK='n', sortAsc=false;
+let ROWS=[], q='', sortK='n', sortAsc=false;
 
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const EPS=1e-9, ge=(v,c)=>v>=c-EPS;
-const band = v => ge(v,0.551)?'b1' : ge(v,0.339)?'b5' : ge(v,0.223)?'b10' : 'b0';
-const passCut = r => ge(r.iLIS_best, cut);
 const matchQ = (r,n) => !n || r.job.toUpperCase().includes(n) || r.membersJoined.toUpperCase().includes(n);
 const NUM = new Set(['n','iLIS_best','conn_total','pdb_cov','pdb_size']);
 
 function view(){
   const n=q.trim().toUpperCase();
-  return ROWS.filter(r=>passCut(r)&&matchQ(r,n)).sort((a,b)=>{
+  return ROWS.filter(r=>matchQ(r,n)).sort((a,b)=>{
     const v = NUM.has(sortK) ? a[sortK]-b[sortK] : String(a[sortK]).localeCompare(String(b[sortK]));
     return (sortAsc? v : -v) || a.membersJoined.localeCompare(b.membersJoined);
   });
@@ -197,7 +179,7 @@ function pdbCell(r){
 }
 function render(){
   const rows=view();
-  document.getElementById('count').textContent = `${rows.length.toLocaleString()} of ${ROWS.length.toLocaleString()} complexes`;
+  document.getElementById('count').textContent = rows.length === ROWS.length ? `${ROWS.length.toLocaleString()} complexes` : `${rows.length.toLocaleString()} of ${ROWS.length.toLocaleString()} complexes`;
   document.querySelector('#tbl tbody').innerHTML = rows.length ? rows.map(r=>{
     const link = `${LIVIA}?data=${encodeURIComponent(r.url)}&name=${encodeURIComponent(r.job)}`;
     const x = r.exp && r.exp.sup ? r.exp : null;
@@ -212,13 +194,12 @@ function render(){
       <td class="sp">${x ? `<em>${esc(SPECIES[x.species] || x.species)}</em>` : DASH}</td>
       <td class="stk"><a href="${link}" target="_blank" rel="noopener">LIVIA &#8599;</a></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="9" class="empty">Nothing matches the current filters.</td></tr>`;
+  }).join('') : `<tr><td colspan="9" class="empty">No complex matches this gene.</td></tr>`;
   document.querySelectorAll('#tbl th[data-k]').forEach(th=>{
     if(th.dataset.k===sortK) th.setAttribute('aria-sort', sortAsc?'ascending':'descending');
     else th.removeAttribute('aria-sort');
   });
 }
-document.getElementById('cut').addEventListener('change',e=>{cut=+e.target.value;render();});
 document.getElementById('q').addEventListener('input',e=>{q=e.target.value;render();});
 document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.onclick=()=>{
   const k=th.dataset.k;
